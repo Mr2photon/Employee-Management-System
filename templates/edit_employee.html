@@ -1,0 +1,103 @@
+
+{% extends "base.html" %}
+
+{% block title %}Edit Employee | EMS{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Update Employee Information</h2>
+
+<form method="POST">
+
+    <div class="row g-3">
+
+        {% for field, label in [
+            ("employee_code", "Employee Code"),
+            ("first_name", "First Name"),
+            ("last_name", "Last Name"),
+            ("email", "Email"),
+            ("phone", "Phone"),
+            ("designation", "Designation")
+        ] %}
+
+        <div class="col-md-6">
+
+            <label class="form-label">{{ label }}</label>
+
+            <input type="{{ 'email' if field == 'email' else 'text' }}"
+                   name="{{ field }}"
+                   class="form-control"
+                   value="{{ form_data.get(field, '') }}"
+                   {% if field != 'phone' %}required{% endif %}>
+
+        </div>
+
+        {% endfor %}
+
+
+        <div class="col-md-6">
+
+            <label class="form-label">Department</label>
+
+            <select name="department" class="form-select" required>
+
+                {% for dept in ["IT", "HR", "Finance", "Marketing", "Sales", "Operations"] %}
+
+                    <option value="{{ dept }}"
+                        {% if form_data.get('department') == dept %}selected{% endif %}>
+                        {{ dept }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <label class="form-label">Salary</label>
+
+            <input type="number"
+                   name="salary"
+                   class="form-control"
+                   min="0"
+                   step="0.01"
+                   required
+                   value="{{ form_data.get('salary', '') }}">
+
+        </div>
+
+
+        <div class="col-md-6">
+
+            <label class="form-label">Joining Date</label>
+
+            <input type="date"
+                   name="joining_date"
+                   class="form-control"
+                   required
+                   value="{{ form_data.get('joining_date', '') }}">
+
+        </div>
+
+    </div>
+
+
+    <div class="mt-4">
+
+        <button type="submit" class="btn btn-success">
+            Update Employee
+        </button>
+
+        <a href="{{ url_for('employee_details', employee_id=employee['employee_id']) }}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </div>
+
+</form>
+
+{% endblock %}

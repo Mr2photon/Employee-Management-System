@@ -1,0 +1,101 @@
+
+{% extends "base.html" %}
+
+{% block title %}Add Employee | EMS{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Register New Employee</h2>
+
+<form method="POST" action="{{ url_for('add_employee_route') }}">
+
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <label class="form-label">Employee Code *</label>
+            <input type="text" name="employee_code"
+                   class="form-control" required maxlength="30"
+                   value="{{ form_data.get('employee_code', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Email *</label>
+            <input type="email" name="email"
+                   class="form-control" required maxlength="254"
+                   value="{{ form_data.get('email', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">First Name *</label>
+            <input type="text" name="first_name"
+                   class="form-control" required
+                   value="{{ form_data.get('first_name', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Last Name *</label>
+            <input type="text" name="last_name"
+                   class="form-control" required
+                   value="{{ form_data.get('last_name', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Phone</label>
+            <input type="tel" name="phone"
+                   class="form-control"
+                   value="{{ form_data.get('phone', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Department *</label>
+            <select name="department" class="form-select" required>
+                <option value="">Select Department</option>
+                {% for dept in ["IT", "HR", "Finance", "Marketing", "Sales", "Operations"] %}
+                    <option value="{{ dept }}"
+                        {% if form_data.get('department') == dept %}selected{% endif %}>
+                        {{ dept }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Designation *</label>
+            <input type="text" name="designation"
+                   class="form-control" required
+                   value="{{ form_data.get('designation', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Salary *</label>
+            <input type="number" name="salary"
+                   class="form-control" required
+                   min="0" step="0.01"
+                   value="{{ form_data.get('salary', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Joining Date *</label>
+            <input type="date" name="joining_date"
+                   class="form-control" required
+                   value="{{ form_data.get('joining_date', '') }}">
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+
+        <button type="submit" class="btn btn-success">
+            Save Employee
+        </button>
+
+        <a href="{{ url_for('employees') }}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </div>
+
+</form>
+
+{% endblock %}

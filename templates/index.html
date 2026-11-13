@@ -1,0 +1,110 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | EMS{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<p class="text-muted">
+    Welcome to the Employee Management System.
+</p>
+
+<div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+        <div class="card dashboard-card shadow-sm">
+            <div class="card-body">
+                <h6>Total Employees</h6>
+                <h2>{{ total_employees }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card dashboard-card shadow-sm">
+            <div class="card-body">
+                <h6>Total Departments</h6>
+                <h2>{{ total_departments }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card dashboard-card shadow-sm">
+            <div class="card-body">
+                <h6>Total Salary Expense</h6>
+                <h2>{{ "%.2f"|format(total_salary) }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h4>Recently Added Employees</h4>
+
+    <a href="{{ url_for('add_employee_route') }}"
+       class="btn btn-primary">
+        Add Employee
+    </a>
+
+</div>
+
+
+<div class="table-responsive">
+
+<table class="table table-bordered table-hover bg-white">
+
+    <thead class="table-dark">
+
+        <tr>
+            <th>ID</th>
+            <th>Employee Code</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Designation</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for emp in recent_employees %}
+
+        <tr>
+
+            <td>{{ emp["employee_id"] }}</td>
+
+            <td>{{ emp["employee_code"] }}</td>
+
+            <td>
+                {{ emp["first_name"] }} {{ emp["last_name"] }}
+            </td>
+
+            <td>{{ emp["department"] }}</td>
+
+            <td>{{ emp["designation"] }}</td>
+
+        </tr>
+
+        {% else %}
+
+        <tr>
+            <td colspan="5" class="text-center">
+                No employees registered yet.
+            </td>
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+{% endblock %}
