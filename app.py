@@ -1,4 +1,5 @@
-
+import os
+from flask_wtf.csrf import CSRFProtect
 import sqlite3
 from datetime import datetime
 from math import isfinite
@@ -27,9 +28,10 @@ app = Flask(__name__)
 
 # Development secret key.
 # Set SECRET_KEY as an environment variable before production deployment.
-app.config["SECRET_KEY"] = "development-only-change-this-key"
 
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY")
 
+csrf = CSRFProtect(app)
 # -----------------------------------------
 # Helper: Validate employee form data
 # -----------------------------------------
@@ -113,10 +115,25 @@ def home():
             "SELECT COALESCE(SUM(salary), 0) FROM employees"
         ).fetchone()[0]
 
+        average_salary = connection.execute(
+            "SELECT COALESCE(AVG(salary), 0) FROM employees"
+        ).fetchone()[0]
+
         recent_employees = connection.execute("""
             SELECT * FROM employees
             ORDER BY employee_id DESC
             LIMIT 5
+        """).fetchall()
+
+        department_stats = connection.execute("""
+            SELECT
+                department,
+                COUNT(*) AS employee_count,
+                ROUND(AVG(salary), 2) AS average_salary,
+                ROUND(SUM(salary), 2) AS total_salary
+            FROM employees
+            GROUP BY department
+            ORDER BY employee_count DESC
         """).fetchall()
 
     finally:
@@ -127,7 +144,9 @@ def home():
         total_employees=total_employees,
         total_departments=total_departments,
         total_salary=total_salary,
-        recent_employees=recent_employees
+        average_salary=average_salary,
+        recent_employees=recent_employees,
+        department_stats=department_stats
     )
 
 

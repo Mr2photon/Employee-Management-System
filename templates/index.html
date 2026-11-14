@@ -11,9 +11,10 @@
     Welcome to the Employee Management System.
 </p>
 
+
 <div class="row g-4 mb-4">
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card dashboard-card shadow-sm">
             <div class="card-body">
                 <h6>Total Employees</h6>
@@ -22,7 +23,7 @@
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card dashboard-card shadow-sm">
             <div class="card-body">
                 <h6>Total Departments</h6>
@@ -31,7 +32,16 @@
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
+        <div class="card dashboard-card shadow-sm">
+            <div class="card-body">
+                <h6>Average Salary</h6>
+                <h2>{{ "%.2f"|format(average_salary) }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
         <div class="card dashboard-card shadow-sm">
             <div class="card-body">
                 <h6>Total Salary Expense</h6>
@@ -41,6 +51,66 @@
     </div>
 
 </div>
+
+<div class="card shadow-sm mt-4 mb-4">
+
+    <div class="card-body">
+
+        <h4 class="mb-3">Department Analytics</h4>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>Department</th>
+                        <th>Employees</th>
+                        <th>Average Salary</th>
+                        <th>Total Salary</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for dept in department_stats %}
+
+                    <tr>
+                        <td>{{ dept["department"] }}</td>
+
+                        <td>
+                            {{ dept["employee_count"] }}
+                        </td>
+
+                        <td>
+                            {{ "%.2f"|format(dept["average_salary"]) }}
+                        </td>
+
+                        <td>
+                            {{ "%.2f"|format(dept["total_salary"]) }}
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            No department data available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
 
 
 <div class="d-flex justify-content-between align-items-center mb-3">

@@ -43,3 +43,55 @@ form .form-label {
 .btn {
     border-radius: 6px;
 }
+
+
+
+
+
+
+
+/* Dashboard improvements */
+
+.dashboard-card {
+    min-height: 130px;
+    border-radius: 12px;
+    transition: all 0.25s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10) !important;
+}
+
+.dashboard-card h2 {
+    font-size: 27px;
+    overflow-wrap: anywhere;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.table {
+    vertical-align: middle;
+}
+
+.table thead th {
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+
+    .dashboard-card {
+        min-height: 100px;
+    }
+
+    .dashboard-card h2 {
+        font-size: 23px;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+}
