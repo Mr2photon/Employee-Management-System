@@ -1,68 +1,84 @@
 
 {% extends "base.html" %}
 
-{% block title %}Dashboard | EMS{% endblock %}
+{% block title %}Dashboard | Employee Management System{% endblock %}
 
 {% block content %}
 
-<h2 class="mb-4">Dashboard</h2>
+<div class="container-fluid py-4">
 
-<p class="text-muted">
-    Welcome to the Employee Management System.
-</p>
-
-
-<div class="row g-4 mb-4">
-
-    <div class="col-md-3">
-        <div class="card dashboard-card shadow-sm">
-            <div class="card-body">
-                <h6>Total Employees</h6>
-                <h2>{{ total_employees }}</h2>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Dashboard</h2>
+            <p class="text-muted mb-0">
+                Employee Management and Analytics Overview
+            </p>
         </div>
+
+        <a href="{{ url_for('add_employee_route') }}"
+           class="btn btn-primary">
+            + Add Employee
+        </a>
     </div>
 
-    <div class="col-md-3">
-        <div class="card dashboard-card shadow-sm">
-            <div class="card-body">
-                <h6>Total Departments</h6>
-                <h2>{{ total_departments }}</h2>
+    <!-- Dashboard statistic cards -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Total Employees</p>
+                    <h3 class="fw-bold">{{ total_employees }}</h3>
+                    <small class="text-primary">Registered employees</small>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card dashboard-card shadow-sm">
-            <div class="card-body">
-                <h6>Average Salary</h6>
-                <h2>{{ "%.2f"|format(average_salary) }}</h2>
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Departments</p>
+                    <h3 class="fw-bold">{{ total_departments }}</h3>
+                    <small class="text-success">Active departments</small>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card dashboard-card shadow-sm">
-            <div class="card-body">
-                <h6>Total Salary Expense</h6>
-                <h2>{{ "%.2f"|format(total_salary) }}</h2>
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Average Salary</p>
+                    <h3 class="fw-bold">
+                        ₹{{ "%.2f"|format(average_salary) }}
+                    </h3>
+                    <small class="text-info">Per employee</small>
+                </div>
             </div>
         </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-2">Total Salary Expense</p>
+                    <h3 class="fw-bold">
+                        ₹{{ "%.2f"|format(total_salary) }}
+                    </h3>
+                    <small class="text-warning">Monthly salary total</small>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-</div>
+    <!-- Department analytics -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Department-wise Analytics</h5>
+        </div>
 
-<div class="card shadow-sm mt-4 mb-4">
-
-    <div class="card-body">
-
-        <h4 class="mb-3">Department Analytics</h4>
-
-        <div class="table-responsive">
-
-            <table class="table table-bordered table-hover">
-
-                <thead class="table-dark">
+        <div class="card-body table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
                     <tr>
                         <th>Department</th>
                         <th>Employees</th>
@@ -72,108 +88,79 @@
                 </thead>
 
                 <tbody>
-
-                    {% for dept in department_stats %}
-
+                    {% for department in department_stats %}
                     <tr>
-                        <td>{{ dept["department"] }}</td>
-
+                        <td>{{ department.department }}</td>
+                        <td>{{ department.employee_count }}</td>
                         <td>
-                            {{ dept["employee_count"] }}
+                            ₹{{ "%.2f"|format(department.average_salary) }}
                         </td>
-
                         <td>
-                            {{ "%.2f"|format(dept["average_salary"]) }}
-                        </td>
-
-                        <td>
-                            {{ "%.2f"|format(dept["total_salary"]) }}
+                            ₹{{ "%.2f"|format(department.total_salary) }}
                         </td>
                     </tr>
-
                     {% else %}
-
                     <tr>
-                        <td colspan="4" class="text-center">
+                        <td colspan="4" class="text-center text-muted">
                             No department data available.
                         </td>
                     </tr>
-
                     {% endfor %}
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
 
-</div>
+    <!-- Recent employee registrations -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Recently Registered Employees</h5>
+        </div>
 
+        <div class="card-body table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Employee Code</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Designation</th>
+                        <th>Joining Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
 
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-
-    <h4>Recently Added Employees</h4>
-
-    <a href="{{ url_for('add_employee_route') }}"
-       class="btn btn-primary">
-        Add Employee
-    </a>
-
-</div>
-
-
-<div class="table-responsive">
-
-<table class="table table-bordered table-hover bg-white">
-
-    <thead class="table-dark">
-
-        <tr>
-            <th>ID</th>
-            <th>Employee Code</th>
-            <th>Name</th>
-            <th>Department</th>
-            <th>Designation</th>
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        {% for emp in recent_employees %}
-
-        <tr>
-
-            <td>{{ emp["employee_id"] }}</td>
-
-            <td>{{ emp["employee_code"] }}</td>
-
-            <td>
-                {{ emp["first_name"] }} {{ emp["last_name"] }}
-            </td>
-
-            <td>{{ emp["department"] }}</td>
-
-            <td>{{ emp["designation"] }}</td>
-
-        </tr>
-
-        {% else %}
-
-        <tr>
-            <td colspan="5" class="text-center">
-                No employees registered yet.
-            </td>
-        </tr>
-
-        {% endfor %}
-
-    </tbody>
-
-</table>
+                <tbody>
+                    {% for employee in recent_employees %}
+                    <tr>
+                        <td>{{ employee.employee_code }}</td>
+                        <td>
+                            {{ employee.first_name }}
+                            {{ employee.last_name }}
+                        </td>
+                        <td>{{ employee.department }}</td>
+                        <td>{{ employee.designation }}</td>
+                        <td>{{ employee.joining_date }}</td>
+                        <td>
+                            <a href="{{ url_for(
+                                'employee_details',
+                                employee_id=employee.employee_id
+                            ) }}" class="btn btn-sm btn-outline-primary">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            No employees registered yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </div>
 
