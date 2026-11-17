@@ -3,9 +3,7 @@ from database import get_db_connection
 
 
 def add_employee(data):
-    """
-    Insert a new employee into the database.
-    """
+    """Insert a new employee and return the generated employee ID."""
 
     connection = get_db_connection()
 
@@ -28,7 +26,7 @@ def add_employee(data):
             data["first_name"],
             data["last_name"],
             data["email"],
-            data.get("phone"),
+            data["phone"],
             data["department"],
             data["designation"],
             data["salary"],
@@ -36,7 +34,6 @@ def add_employee(data):
         ))
 
         connection.commit()
-
         return cursor.lastrowid
 
     finally:
@@ -44,15 +41,14 @@ def add_employee(data):
 
 
 def get_all_employees():
-    """
-    Retrieve all employees.
-    """
+    """Return all employees, newest first."""
 
     connection = get_db_connection()
 
     try:
         employees = connection.execute("""
-            SELECT * FROM employees
+            SELECT *
+            FROM employees
             ORDER BY employee_id DESC
         """).fetchall()
 
@@ -63,15 +59,14 @@ def get_all_employees():
 
 
 def get_employee_by_id(employee_id):
-    """
-    Retrieve an employee using employee ID.
-    """
+    """Return one employee using employee ID."""
 
     connection = get_db_connection()
 
     try:
         employee = connection.execute("""
-            SELECT * FROM employees
+            SELECT *
+            FROM employees
             WHERE employee_id = ?
         """, (employee_id,)).fetchone()
 
@@ -82,9 +77,7 @@ def get_employee_by_id(employee_id):
 
 
 def update_employee(employee_id, data):
-    """
-    Update existing employee information.
-    """
+    """Update an existing employee."""
 
     connection = get_db_connection()
 
@@ -101,14 +94,13 @@ def update_employee(employee_id, data):
                 designation = ?,
                 salary = ?,
                 joining_date = ?
-
             WHERE employee_id = ?
         """, (
             data["employee_code"],
             data["first_name"],
             data["last_name"],
             data["email"],
-            data.get("phone"),
+            data["phone"],
             data["department"],
             data["designation"],
             data["salary"],
@@ -117,7 +109,6 @@ def update_employee(employee_id, data):
         ))
 
         connection.commit()
-
         return cursor.rowcount > 0
 
     finally:
@@ -125,9 +116,7 @@ def update_employee(employee_id, data):
 
 
 def delete_employee(employee_id):
-    """
-    Delete an employee using employee ID.
-    """
+    """Delete an employee using employee ID."""
 
     connection = get_db_connection()
 
@@ -138,7 +127,6 @@ def delete_employee(employee_id):
         """, (employee_id,))
 
         connection.commit()
-
         return cursor.rowcount > 0
 
     finally:

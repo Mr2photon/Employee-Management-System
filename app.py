@@ -1,4 +1,5 @@
-
+import os
+from flask_wtf.csrf import CSRFProtect
 import sqlite3
 from datetime import datetime
 from math import isfinite
@@ -27,9 +28,12 @@ app = Flask(__name__)
 
 # Development secret key.
 # Set SECRET_KEY as an environment variable before production deployment.
-app.config["SECRET_KEY"] = "development-only-change-this-key"
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "dev-secret-key-emss"
+)
 
-
+csrf = CSRFProtect(app)
 # -----------------------------------------
 # Helper: Validate employee form data
 # -----------------------------------------
@@ -95,26 +99,60 @@ def validate_employee_form():
 # Route 1: Dashboard
 # -----------------------------------------
 
+
 @app.route("/")
 def home():
 
     connection = get_db_connection()
 
     try:
-        total_employees = connection.execute(
-            "SELECT COUNT(*) FROM employees"
-        ).fetchone()[0]
+        # 1. Total number of employees
+        total_employees = connection.execute("""
+            SELECT COUNT(*)
+            FROM employees
+        """).fetchone()[0]
 
-        total_departments = connection.execute(
-            "SELECT COUNT(DISTINCT department) FROM employees"
-        ).fetchone()[0]
+        # 2. Total number of departments
+        total_departments = connection.execute("""
+            SELECT COUNT(DISTINCT department)
+            FROM employees
+        """).fetchone()[0]
 
-        total_salary = connection.execute(
-            "SELECT COALESCE(SUM(salary), 0) FROM employees"
-        ).fetchone()[0]
+        # 3. Average employee salary
+        average_salary = connection.execute("""
+            SELECT COALESCE(AVG(salary), 0)
+            FROM employees
+        """).fetchone()[0]
 
+        # 4. Total monthly salary expense
+        total_salary = connection.execute("""
+            SELECT COALESCE(SUM(salary), 0)
+            FROM employees
+        """).fetchone()[0]
+
+        # 5. Department-wise analytics
+        department_stats = connection.execute("""
+            SELECT
+                department,
+                COUNT(*) AS employee_count,
+                ROUND(AVG(salary), 2) AS average_salary,
+                ROUND(SUM(salary), 2) AS total_salary
+            FROM employees
+            GROUP BY department
+            ORDER BY employee_count DESC
+        """).fetchall()
+
+        # 6. Recently registered employees
         recent_employees = connection.execute("""
-            SELECT * FROM employees
+            SELECT
+                employee_id,
+                employee_code,
+                first_name,
+                last_name,
+                department,
+                designation,
+                joining_date
+            FROM employees
             ORDER BY employee_id DESC
             LIMIT 5
         """).fetchall()
@@ -126,9 +164,12 @@ def home():
         "index.html",
         total_employees=total_employees,
         total_departments=total_departments,
+        average_salary=average_salary,
         total_salary=total_salary,
+        department_stats=department_stats,
         recent_employees=recent_employees
     )
+
 
 
 # -----------------------------------------
