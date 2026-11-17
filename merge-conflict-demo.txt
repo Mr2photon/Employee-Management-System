@@ -1,1 +1,4 @@
 This content was added by Member 1.
+This content was added by Member 2.
+
+Merge conflict successfully resolved by combining both contributions.
