@@ -1,3 +1,6 @@
+import csv
+import io
+
 import os
 from flask_wtf.csrf import CSRFProtect
 import sqlite3
@@ -10,7 +13,8 @@ from flask import (
     redirect,
     url_for,
     flash,
-    abort
+    abort,
+    Response
 )
 
 from database import init_db, get_db_connection
@@ -217,6 +221,83 @@ def employees():
         search_query=search_query
     )
 
+
+# -----------------------------------------
+# Route: Export employees to CSV
+# -----------------------------------------
+
+@app.route("/export-employees")
+def export_employees():
+
+    search_query = request.args.get("q", "").strip()
+
+    # Retrieve employees using the same search logic
+    connection = get_db_connection()
+
+    try:
+        if search_query:
+            pattern = f"%{search_query}%"
+
+            employee_list = connection.execute("""
+                SELECT * FROM employees
+                WHERE employee_code LIKE ?
+                   OR first_name LIKE ?
+                   OR last_name LIKE ?
+                   OR email LIKE ?
+                   OR department LIKE ?
+                ORDER BY employee_id DESC
+            """, (pattern, pattern, pattern, pattern, pattern)).fetchall()
+
+        else:
+            employee_list = get_all_employees()
+
+    finally:
+        connection.close()
+
+    # Create CSV content in memory
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # CSV column headings
+    writer.writerow([
+        "Employee ID",
+        "Employee Code",
+        "First Name",
+        "Last Name",
+        "Email",
+        "Phone",
+        "Department",
+        "Designation",
+        "Salary",
+        "Joining Date"
+    ])
+
+    # Write employee records
+    for emp in employee_list:
+        writer.writerow([
+            emp["employee_id"],
+            emp["employee_code"],
+            emp["first_name"],
+            emp["last_name"],
+            emp["email"],
+            emp["phone"],
+            emp["department"],
+            emp["designation"],
+            emp["salary"],
+            emp["joining_date"]
+        ])
+
+    # Return CSV as a downloadable file
+    response = Response(
+        output.getvalue(),
+        mimetype="text/csv"
+    )
+
+    response.headers["Content-Disposition"] = (
+        "attachment; filename=employees.csv"
+    )
+
+    return response
 
 # -----------------------------------------
 # Route 3: Add employee
