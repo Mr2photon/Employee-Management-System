@@ -1,0 +1,61 @@
+
+{% extends "base.html" %}
+
+{% block title %}Import Employees | EMS{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Import Employees from CSV</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <p class="text-muted">
+            Upload a CSV file to register multiple employees at once.
+        </p>
+
+        <div class="alert alert-info">
+            <strong>Required CSV columns:</strong>
+            <br>
+            employee_code, first_name, last_name, email, phone,
+            department, designation, salary, joining_date
+            <br><br>
+            Joining date format: YYYY-MM-DD
+        </div>
+
+        <form method="POST"
+              action="{{ url_for('import_employees') }}"
+              enctype="multipart/form-data">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <div class="mb-3">
+                <label for="csv_file" class="form-label">
+                    Select CSV File
+                </label>
+
+                <input type="file"
+                       class="form-control"
+                       id="csv_file"
+                       name="csv_file"
+                       accept=".csv"
+                       required>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                Import Employees
+            </button>
+
+            <a href="{{ url_for('employees') }}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

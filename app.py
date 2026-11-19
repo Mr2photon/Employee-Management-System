@@ -1,6 +1,6 @@
 import csv
 import io
-
+from flask import request
 import os
 from flask_wtf.csrf import CSRFProtect
 import sqlite3
@@ -42,18 +42,25 @@ csrf = CSRFProtect(app)
 # Helper: Validate employee form data
 # -----------------------------------------
 
-def validate_employee_form():
+
+
+
+def validate_employee_form(form_data=None):
+
+    if form_data is None:
+
+        form_data = request.form
 
     data = {
-        "employee_code": request.form.get("employee_code", "").strip(),
-        "first_name": request.form.get("first_name", "").strip(),
-        "last_name": request.form.get("last_name", "").strip(),
-        "email": request.form.get("email", "").strip().lower(),
-        "phone": request.form.get("phone", "").strip(),
-        "department": request.form.get("department", "").strip(),
-        "designation": request.form.get("designation", "").strip(),
-        "salary": request.form.get("salary", "").strip(),
-        "joining_date": request.form.get("joining_date", "").strip()
+        "employee_code": (form_data.get("employee_code") or "").strip(),
+        "first_name": (form_data.get("first_name") or "").strip(),
+        "last_name": (form_data.get("last_name") or "").strip(),
+        "email": (form_data.get("email") or "").strip().lower(),
+        "phone": (form_data.get("phone") or "").strip(),
+        "department": (form_data.get("department") or "").strip(),
+        "designation": (form_data.get("designation") or "").strip(),
+        "salary": (form_data.get("salary") or "").strip(),
+        "joining_date": (form_data.get("joining_date") or "").strip()
     }
 
     required_fields = [
@@ -97,6 +104,7 @@ def validate_employee_form():
         return None, "Phone number is too long."
 
     return data, None
+
 
 
 # -----------------------------------------
@@ -299,6 +307,15 @@ def export_employees():
 
     return response
 
+
+# -----------------------------------------
+# Route: Import employees
+# -----------------------------------------
+
+@app.route("/import-employees", methods=["GET", "POST"])
+def import_employees():
+
+    return render_template("import_employees.html")
 # -----------------------------------------
 # Route 3: Add employee
 # -----------------------------------------
